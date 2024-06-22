@@ -1,0 +1,7 @@
+APK Signer allows you to easily sign APK files on-device, signing it on the same device you might be installing it onto.
+
+If you want to try development builds of certain Android apps produced directly from their CI, the APK artifacts may be unsigned and you are expected to first sign them with your own key to be able to try them. On desktop you can use the <code>apksigner</code> tool on the command-line (which also exists on Termux), but can be inconvenient when you do not have a computer accessible.
+
+When opening the app it will open a file picker dialog for picking the input APK, and once signed another dialog will be shown to save the file. Once saved, you can install the newly signed APK file with your favourite file manager. It uses the same <code>apksig</code> Java library used by <code>apksigner</code> for the signing process.
+
+Apps will be signed with a generic key provided by the app, and it's not possible to provide your own key at the moment. If installing a new version of an app on top of an existing app you will need to uninstall it, as Android enforces app updates to be signed with the same signing key that the first installed version of the app had.
