@@ -30,6 +30,8 @@ public class MainActivity extends Activity {
 	}
 
 	private void openFilePicker() {
+		Toast.makeText(this, "Please select an APK to sign.", Toast.LENGTH_LONG).show();
+
 		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
 		intent.setType("application/vnd.android.package-archive");
@@ -47,17 +49,23 @@ public class MainActivity extends Activity {
 
 				signApk(tempFile);
 
-				promptUserToSaveFile();
+				if (this.tempOutput != null)
+					promptUserToSaveFile();
 			}
 		} else if (requestCode == CREATE_FILE_REQUEST_CODE && resultCode == RESULT_OK) {
 			if (data != null) {
 				pickedFileUri = data.getData();
 				copyFileToUri(tempOutput, pickedFileUri);
+
+				Toast.makeText(this, "Done!", Toast.LENGTH_LONG).show();
+				finishAffinity();
 			}
 		}
 	}
 
 	private void promptUserToSaveFile() {
+		Toast.makeText(this, "App has been signed, please select a path to save it to.", Toast.LENGTH_LONG).show();
+
 		Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
 		intent.setType("application/vnd.android.package-archive");
@@ -105,17 +113,16 @@ public class MainActivity extends Activity {
 		File tempOutput;
 		try {
 			tempOutput = File.createTempFile("temp_apk", ".apk", getCacheDir());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		try {
-			Log.e("ApkSigner", "File output: "+tempOutput.getPath());
+
+			Log.v("ApkSigner", "File output: "+tempOutput.getPath());
 			signer.sign(inputFile, new File(tempOutput.getPath()));
-			Toast.makeText(this, "App signed.", Toast.LENGTH_SHORT).show();
+
+			this.tempOutput = tempOutput;
+
 		} catch (Exception e) {
+			Toast.makeText(this, "There was an error signing the app.", Toast.LENGTH_LONG).show();
+
 			Log.e(TAG, "Signing error:"+e.getMessage());
 		}
-
-		this.tempOutput = tempOutput;
 	}
 }
